@@ -1,10 +1,3 @@
-//fun terr(msg: String): Nothing = throw TypeCastException(msg)
-//
-//fun Nil() = mapOf("tag" to "Nil")
-//fun Cons(head: Any, tail: Any) = mapOf("tag" to "Nil", "head" to head, "tail" to tail)
-//
-//fun showList(l: Map<String, Any>, str: (Any) -> (String)) {}
-
 sealed class SyntaxNode {
     companion object {
         fun string(ast: SyntaxNode): String =
@@ -38,7 +31,7 @@ object TypeSystem {
 
     data class Oper(val name: String, val args: List<Type>) : Type()
 
-    fun Function(from: Type, to: Type) = Oper("→", listOf(from, to))
+    fun Function(from: Type, to: Type) = Oper("->", listOf(from, to))
     val Integer = Oper("int", ArrayList())
     val Bool = Oper("bool", ArrayList())
 
@@ -137,7 +130,7 @@ object TypeSystem {
         } else if (type1 is Oper && type2 is Oper) {
             if (type1.name != type2.name ||
                 type1.args.size != type2.args.size
-            ) throw TypeError("Type mismatch: ${string(type1)}≠${string(type2)}")
+            ) throw TypeError("Type mismatch: ${string(type1)} != ${string(type2)}")
             for (i in 0 until type1.args.size)
                 unify(type1.args[i], type2.args[i])
         }
@@ -159,7 +152,7 @@ object TypeSystem {
     fun isgeneric(v: Variable, nongen: Set<Variable>) = !(occursin(v, nongen))
 
     fun occursintype(v: Variable, type2: Type): Boolean = when (val p = prune(type2)) {
-        `v` -> true
+        v -> true
         is Oper -> occursin(v, p.args)
         else -> false
     }
