@@ -14,35 +14,42 @@ sealed class SyntaxNode {
 }
 
 data class Lambda(val v: String, val body: SyntaxNode) : SyntaxNode()
+
 data class Ident(val name: String) : SyntaxNode()
+
 data class Apply(val fn: SyntaxNode, val arg: SyntaxNode) : SyntaxNode()
+
 data class Let(val v: String, val defn: SyntaxNode, val body: SyntaxNode) : SyntaxNode()
+
 data class Letrec(val v: String, val defn: SyntaxNode, val body: SyntaxNode) : SyntaxNode()
 
 class TypeError(msg: String) : Exception(msg)
+
 class ParseError(msg: String) : Exception(msg)
 
 object TypeSystem {
     sealed class Type
     data class Variable(val id: Int) : Type() {
         var instance: Type? = null
-        val name = nextUniqueName()
+        val name : String by lazy { nextUniqueName() }
     }
 
     data class Oper(val name: String, val args: List<Type>) : Type()
 
     fun Function(from: Type, to: Type) = Oper("->", listOf(from, to))
-    val Integer = Oper("int", ArrayList())
-    val Bool = Oper("bool", ArrayList())
+    val Integer = Oper("int", arrayListOf())
+    val Bool = Oper("bool", arrayListOf())
 
-    private var _nextVariableName = 'α'
+    var _nextVariableName = 'α'
+
     fun nextUniqueName(): String {
         val result = _nextVariableName
         _nextVariableName = (_nextVariableName.code + 1).toChar()
         return result.toString()
     }
 
-    private var _nextVariableId = 0
+    var _nextVariableId = 0
+
     fun newVariable(): Variable {
         val result = _nextVariableId
         _nextVariableId++
@@ -248,13 +255,14 @@ object HindleyMilner {
     }
 
     fun tryexp(env: Map<String, TypeSystem.Type>, ast: SyntaxNode) {
-        println("${SyntaxNode.string(ast)} : ")
+        print("${SyntaxNode.string(ast)} : ")
         try {
             val t = TypeSystem.analyse(ast, env)
-            println(TypeSystem.string(t))
+            print(TypeSystem.string(t))
         } catch (e: Exception) {
-            println(e.message)
+            print(e.message + " : " + e.stackTrace)
         }
+        println()
     }
 }
 
