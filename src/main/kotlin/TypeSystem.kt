@@ -3,8 +3,9 @@ typealias Env = Map<String, Type>
 sealed class Type
 data class Variable(val id: Int) : Type() {
     var instance: Type? = null
-    val name : String by lazy { nextUniqueName() }
+    val name: String by lazy { nextUniqueName() }
 }
+
 data class Oper(val name: String, val args: List<Type>) : Type()
 
 fun Function(from: Type, to: Type) = Oper("->", listOf(from, to))
@@ -23,7 +24,7 @@ var _nextVariableId = 0
 
 fun newVariable(): Variable {
     val result = _nextVariableId
-    _nextVariableId+=1
+    _nextVariableId += 1
     return Variable(result)
 }
 
@@ -39,8 +40,7 @@ fun string(t: Type): String = when (t) {
     }
 }
 
-fun analyse(ast: SyntaxNode, env: Env): Type = analyse(ast, env, mutableSetOf())
-fun analyse(ast: SyntaxNode, env: Env, nongen: Set<Variable>): Type = when (ast) {
+fun analyse(ast: SyntaxNode, env: Env, nongen: Set<Variable> = mutableSetOf()): Type = when (ast) {
     is Ident -> gettype(ast.name, env, nongen)
     is Apply -> {
         val (fn, arg) = ast
