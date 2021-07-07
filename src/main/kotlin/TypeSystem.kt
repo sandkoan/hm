@@ -39,8 +39,7 @@ fun string(t: Type): String = when (t) {
     }
 }
 
-fun analyse(ast: SyntaxNode, env: Env): Type = analyse(ast, env, mutableSetOf())
-fun analyse(ast: SyntaxNode, env: Env, nongen: Set<Variable>): Type = when (ast) {
+fun analyse(ast: SyntaxNode, env: Env, nongen: Set<Variable> = mutableSetOf()): Type = when (ast) {
     is Ident -> gettype(ast.name, env, nongen)
     is Apply -> {
         val (fn, arg) = ast
